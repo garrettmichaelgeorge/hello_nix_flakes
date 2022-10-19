@@ -9,8 +9,14 @@
   outputs = { self, nixpkgs, utils }:
     utils.lib.eachDefaultSystem (system: 
       let pkgs = import nixpkgs { inherit system; };
-      in {
-        packages.hello = pkgs.hello;
-        packages.default = pkgs.hello;
+      in rec {
+        packages.hello = pkgs.stdenv.mkDerivation {
+          name = "hello";
+          src = self;
+          buildInputs = [ pkgs.gcc ];
+          buildPhase = "gcc -o hello ./hello.c";
+          installPhase = "mkdir -p $out/bin; install -t $out/bin hello";
+        };
+        packages.default = packages.hello;
     });
 }
