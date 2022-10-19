@@ -1,11 +1,16 @@
 {
   description = "Says hello to the world";
 
-  outputs = { self, nixpkgs }: {
-
-    packages.x86_64-darwin.hello = nixpkgs.legacyPackages.x86_64-darwin.hello;
-
-    packages.x86_64-darwin.default = self.packages.x86_64-darwin.hello;
-
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    utils.url = "github:numtide/flake-utils";
   };
+
+  outputs = { self, nixpkgs, utils }:
+    utils.lib.eachDefaultSystem (system: 
+      let pkgs = import nixpkgs { inherit system; };
+      in {
+        packages.hello = pkgs.hello;
+        packages.default = pkgs.hello;
+    });
 }
