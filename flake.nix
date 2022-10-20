@@ -3,19 +3,20 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    utils.url = "github:numtide/flake-utils";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, utils }:
-    utils.lib.eachDefaultSystem (system: 
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system: 
       let pkgs = import nixpkgs { inherit system; };
       in rec {
-        packages.hello = pkgs.stdenv.mkDerivation {
+        packages.hello = pkgs.stdenv.mkDerivation rec {
           name = "hello";
+          gcc = "${pkgs.gcc}/bin/gcc";
           src = self;
           buildInputs = [ pkgs.gcc ];
-          buildPhase = "gcc -o hello ./hello.c";
-          installPhase = "mkdir -p $out/bin; install -t $out/bin hello";
+          buildPhase = "$gcc -o ${name} ./hello.c";
+          installPhase = "mkdir -p $out/bin; install -t $out/bin ${name}";
         };
         packages.default = packages.hello;
     });
