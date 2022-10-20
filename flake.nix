@@ -12,10 +12,9 @@
       in rec {
         packages.hello = pkgs.stdenv.mkDerivation rec {
           name = "hello";
-          gcc = "${pkgs.gcc}/bin/gcc";
           src = self;
           buildInputs = [ pkgs.gcc ];
-          buildPhase = "$gcc -o ${name} ./main.c";
+          buildPhase = "gcc -o ${name} ./main.c";
           installPhase = "mkdir -p $out/bin; install -t $out/bin ${name}";
         };
         packages.default = packages.hello;
