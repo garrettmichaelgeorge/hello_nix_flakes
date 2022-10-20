@@ -1,0 +1,20 @@
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: cachix/install-nix-action@v18
+
+      - name: build
+        run: nix build
+        
+      # TODO: add a flake check
+      # - name: test
+      #   run: nix flake check
+        
+      - name: run
+        run: nix run
