@@ -36,8 +36,9 @@
         };
 
         checks = {
-          format = pkgs.nixpkgs-fmt;
-          test = pkgs.runCommandLocal "test-hello" {  } ''
+          flake-build = packages.default;
+
+          test = pkgs.runCommandLocal "test-hello" { } ''
             ${packages.default}/bin/${packages.default.name} > $out
           '';
         };
