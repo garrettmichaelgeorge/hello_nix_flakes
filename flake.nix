@@ -7,16 +7,37 @@
   };
 
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system: 
-      let pkgs = import nixpkgs { inherit system; };
-      in rec {
-        packages.hello = pkgs.stdenv.mkDerivation rec {
-          name = "hello";
-          src = self;
-          buildInputs = [ pkgs.gcc ];
-          buildPhase = "gcc -o ${name} ./main.c";
-          installPhase = "mkdir -p $out/bin; install -t $out/bin ${name}";
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+
+      in
+      {
+        packages = rec {
+          hello = pkgs.stdenv.mkDerivation rec {
+            name = "hello";
+            src = self;
+            buildInputs = [ pkgs.gcc ];
+            buildPhase = "$CC -o ${name} ./main.c";
+            installPhase = "mkdir -p $out/bin; install -t $out/bin ${name}";
+          };
+          default = hello;
         };
-        packages.default = packages.hello;
-    });
+
+        formatter = pkgs.nixpkgs-fmt;
+
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            pkgs.nixpkgs-fmt
+            pkgs.nixpkgs-lint
+
+            pkgs.act
+          ];
+        };
+
+        checks = {
+          format = pkgs.nixpkgs-fmt;
+        };
+      }
+    );
 }
