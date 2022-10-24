@@ -14,13 +14,7 @@
       in
       rec {
         packages = {
-          hello = pkgs.stdenv.mkDerivation rec {
-            name = "hello";
-            src = self;
-            buildInputs = [ pkgs.gcc ];
-            buildPhase = "$CC -o ${name} ./main.c";
-            installPhase = "mkdir -p $out/bin; install -t $out/bin ${name}";
-          };
+          hello = pkgs.callPackage ./default.nix { inherit pkgs; src = self; };
           default = packages.hello;
         };
 
