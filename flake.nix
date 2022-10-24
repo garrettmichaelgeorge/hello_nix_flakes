@@ -12,8 +12,8 @@
         pkgs = import nixpkgs { inherit system; };
 
       in
-      {
-        packages = rec {
+      rec {
+        packages = {
           hello = pkgs.stdenv.mkDerivation rec {
             name = "hello";
             src = self;
@@ -21,7 +21,7 @@
             buildPhase = "$CC -o ${name} ./main.c";
             installPhase = "mkdir -p $out/bin; install -t $out/bin ${name}";
           };
-          default = hello;
+          default = packages.hello;
         };
 
         formatter = pkgs.nixpkgs-fmt;
@@ -37,6 +37,9 @@
 
         checks = {
           format = pkgs.nixpkgs-fmt;
+          test = pkgs.runCommandLocal "test-hello" {  } ''
+            ${packages.default}/bin/${packages.default.name} > $out
+          '';
         };
       }
     );
