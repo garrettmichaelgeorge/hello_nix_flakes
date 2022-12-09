@@ -24,6 +24,7 @@
           buildInputs = [
             pkgs.nixpkgs-fmt
             pkgs.nixpkgs-lint
+            pkgs.rnix-lsp
 
             pkgs.act
           ];
